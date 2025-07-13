@@ -5,7 +5,7 @@ from app.models.user import User
 from app.models.employee import Employee
 from app.schemas.auth import UserRegister
 from app.core.security import verify_password, get_password_hash
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 

@@ -1,11 +1,67 @@
-from fastapi import Request, HTTPException, status
+from fastapi import Request, HTTPException, status, Depends
 from fastapi.responses import JSONResponse
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from starlette.middleware.base import BaseHTTPMiddleware
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.security import verify_token
 from app.core.redis import redis_manager
+from app.core.database import get_db
+from app.crud.user import user_crud
+from app.models.user import User
 import logging
 
 logger = logging.getLogger(__name__)
+
+# FastAPI security scheme
+security = HTTPBearer()
+
+async def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: AsyncSession = Depends(get_db)
+) -> User:
+    """
+    Dependency to get current authenticated user.
+    """
+    token = credentials.credentials
+    
+    # Check if token is blacklisted
+    is_blacklisted = await redis_manager.get_cache(f"blacklist:{token}")
+    if is_blacklisted:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has been revoked"
+        )
+    
+    # Verify token
+    payload = verify_token(token)
+    if not payload:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token"
+        )
+    
+    user_id = payload.get("sub")
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token payload"
+        )
+    
+    # Get user from database
+    user = await user_crud.get(db, id=int(user_id))
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found"
+        )
+    
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User account is disabled"
+        )
+    
+    return user
 
 
 class AuthMiddleware(BaseHTTPMiddleware):

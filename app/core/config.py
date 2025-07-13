@@ -3,6 +3,12 @@ from typing import List, Optional
 
 
 class Settings(BaseSettings):
+    # Project Info
+    PROJECT_NAME: str = "HRMS SaaS"
+    VERSION: str = "1.0.0"
+    DESCRIPTION: str = "Human Resource Management System"
+    API_V1_STR: str = "/api/v1"
+    
     # Environment
     ENV: str = "development"
     DEBUG: bool = True
@@ -25,6 +31,7 @@ class Settings(BaseSettings):
     
     # CORS
     ALLOWED_ORIGINS: List[str] = ["http://localhost:3000"]
+    ALLOWED_HOSTS: List[str] = ["*"]
     
     # File Storage
     AWS_ACCESS_KEY_ID: Optional[str] = None

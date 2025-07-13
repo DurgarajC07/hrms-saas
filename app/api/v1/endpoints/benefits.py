@@ -4,7 +4,7 @@ from typing import List, Optional
 from datetime import date
 
 from app.core.database import get_db
-from app.middleware.auth import get_current_user
+from app.api.v1.endpoints.auth import get_current_user
 from app.models.benefits import BenefitType, BenefitStatus, EnrollmentStatus
 from app.schemas.benefits import (
     BenefitPlanCreate, BenefitPlanUpdate, BenefitPlanResponse,

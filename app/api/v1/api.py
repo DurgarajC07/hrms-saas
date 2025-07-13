@@ -1,9 +1,8 @@
 from fastapi import APIRouter
 from app.api.v1.endpoints import (
-    auth, users, companies, employees, attendance, 
-    payroll, leave, performance, assets, documents,
-    reports, dashboard, onboarding, compliance,
-    expenses, benefits
+    auth, performance, attendance, expenses, benefits,
+    users, companies, employees, payroll, leave, assets, documents,
+    reports, dashboard, onboarding, compliance
 )
 
 api_router = APIRouter()

@@ -232,23 +232,6 @@ async def logout(
         )
 
 
-@router.get("/me")
-async def get_current_user_info(
-    current_user: User = Depends(get_current_user)
-):
-    """Get current user information"""
-    return {
-        "id": current_user.id,
-        "email": current_user.email,
-        "username": current_user.username,
-        "first_name": current_user.first_name,
-        "last_name": current_user.last_name,
-        "role": current_user.role,
-        "status": current_user.status,
-        "created_at": current_user.created_at,
-    }
-
-
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: AsyncSession = Depends(get_db)
@@ -302,3 +285,20 @@ async def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials"
         )
+
+
+@router.get("/me")
+async def get_current_user_info(
+    current_user: User = Depends(get_current_user)
+):
+    """Get current user information"""
+    return {
+        "id": current_user.id,
+        "email": current_user.email,
+        "username": current_user.username,
+        "first_name": current_user.first_name,
+        "last_name": current_user.last_name,
+        "role": current_user.role,
+        "status": current_user.status,
+        "created_at": current_user.created_at,
+    }
