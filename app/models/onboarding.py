@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Enum, Index, Date, Decimal, Text
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Enum, Index, Date, Text
+from sqlalchemy.types import Numeric
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.core.database import Base
@@ -197,7 +198,7 @@ class OnboardingTemplate(Base):
     
     # Indexes
     __table_args__ = (
-        Index('idx_template_company', 'company_id', 'is_active'),
+        Index('idx_onboarding_template_company', 'company_id', 'is_active'),
         Index('idx_template_default', 'is_default', 'is_active'),
     )
 
@@ -271,7 +272,7 @@ class OnboardingProgress(Base):
     tasks_completed_on_time = Column(Integer, default=0)
     tasks_completed_late = Column(Integer, default=0)
     tasks_skipped = Column(Integer, default=0)
-    total_time_spent_hours = Column(Decimal(8, 2))
+    total_time_spent_hours = Column(Numeric(8, 2))
     
     # Exit survey (if applicable)
     exit_survey_completed = Column(Boolean, default=False)

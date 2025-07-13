@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Enum, Index, Date, Decimal, Text
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Enum, Index, Date, Text
+from sqlalchemy.types import Numeric
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.core.database import Base
@@ -51,12 +52,12 @@ class Performance(Base):
     completion_percentage = Column(Integer, default=0)
     
     # Ratings (1-5 scale)
-    overall_rating = Column(Decimal(3, 2))
-    technical_skills_rating = Column(Decimal(3, 2))
-    communication_rating = Column(Decimal(3, 2))
-    teamwork_rating = Column(Decimal(3, 2))
-    leadership_rating = Column(Decimal(3, 2))
-    initiative_rating = Column(Decimal(3, 2))
+    overall_rating = Column(Numeric(3, 2))
+    technical_skills_rating = Column(Numeric(3, 2))
+    communication_rating = Column(Numeric(3, 2))
+    teamwork_rating = Column(Numeric(3, 2))
+    leadership_rating = Column(Numeric(3, 2))
+    initiative_rating = Column(Numeric(3, 2))
     
     # Comments and feedback
     employee_comments = Column(Text)
@@ -69,16 +70,16 @@ class Performance(Base):
     # Self assessment
     self_assessment_completed = Column(Boolean, default=False)
     self_assessment_date = Column(DateTime(timezone=True))
-    self_rating = Column(Decimal(3, 2))
+    self_rating = Column(Numeric(3, 2))
     achievements = Column(Text)
     challenges_faced = Column(Text)
     
     # Manager review
     manager_review_completed = Column(Boolean, default=False)
     manager_review_date = Column(DateTime(timezone=True))
-    recommended_rating = Column(Decimal(3, 2))
+    recommended_rating = Column(Numeric(3, 2))
     promotion_recommendation = Column(Boolean, default=False)
-    salary_increase_recommendation = Column(Decimal(5, 2))  # percentage
+    salary_increase_recommendation = Column(Numeric(5, 2))  # percentage
     
     # Final review
     final_review_completed = Column(Boolean, default=False)
@@ -93,7 +94,7 @@ class Performance(Base):
     # Relationships
     employee = relationship("Employee", foreign_keys=[employee_id], back_populates="performances")
     reviewer = relationship("Employee", foreign_keys=[reviewer_id])
-    final_reviewer = relationship("User")
+    final_reviewer = relationship("User", foreign_keys=[final_reviewed_by])
     creator = relationship("User", foreign_keys=[created_by])
     goals = relationship("PerformanceGoal", back_populates="performance")
     
@@ -125,7 +126,7 @@ class PerformanceGoal(Base):
     # Progress tracking
     status = Column(Enum(GoalStatus), default=GoalStatus.NOT_STARTED)
     progress_percentage = Column(Integer, default=0)
-    achievement_rating = Column(Decimal(3, 2))
+    achievement_rating = Column(Numeric(3, 2))
     actual_achievement = Column(Text)
     
     # Comments

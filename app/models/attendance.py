@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Enum, Index, Date, Time, Decimal
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Enum, Index, Date, Time
+from sqlalchemy.types import Numeric
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.core.database import Base
@@ -34,14 +35,14 @@ class Attendance(Base):
     punch_in_time = Column(DateTime(timezone=True))
     punch_out_time = Column(DateTime(timezone=True))
     break_duration = Column(Integer, default=0)  # minutes
-    total_hours = Column(Decimal(5, 2))
-    overtime_hours = Column(Decimal(5, 2), default=0)
+    total_hours = Column(Numeric(5, 2))
+    overtime_hours = Column(Numeric(5, 2), default=0)
     
     # Location tracking
-    punch_in_latitude = Column(Decimal(10, 8))
-    punch_in_longitude = Column(Decimal(11, 8))
-    punch_out_latitude = Column(Decimal(10, 8))
-    punch_out_longitude = Column(Decimal(11, 8))
+    punch_in_latitude = Column(Numeric(10, 8))
+    punch_in_longitude = Column(Numeric(11, 8))
+    punch_out_latitude = Column(Numeric(10, 8))
+    punch_out_longitude = Column(Numeric(11, 8))
     punch_in_address = Column(String(500))
     punch_out_address = Column(String(500))
     
@@ -94,8 +95,8 @@ class AttendancePunch(Base):
     punch_time = Column(DateTime(timezone=True), nullable=False)
     
     # Location data
-    latitude = Column(Decimal(10, 8))
-    longitude = Column(Decimal(11, 8))
+    latitude = Column(Numeric(10, 8))
+    longitude = Column(Numeric(11, 8))
     address = Column(String(500))
     device_info = Column(String(255))  # Device/browser info
     ip_address = Column(String(45))
@@ -137,17 +138,17 @@ class Shift(Base):
     
     # Overtime settings
     overtime_threshold = Column(Integer, default=480)  # minutes (8 hours)
-    overtime_multiplier = Column(Decimal(3, 2), default=1.5)
+    overtime_multiplier = Column(Numeric(3, 2), default=1.5)
     
     # Weekly settings
     working_days = Column(String(20), default="1,2,3,4,5")  # Comma-separated day numbers
-    weekly_hours = Column(Decimal(5, 2), default=40)
+    weekly_hours = Column(Numeric(5, 2), default=40)
     
     # Validations
     is_night_shift = Column(Boolean, default=False)
     is_flexible = Column(Boolean, default=False)
-    min_hours_per_day = Column(Decimal(4, 2), default=8)
-    max_hours_per_day = Column(Decimal(4, 2), default=12)
+    min_hours_per_day = Column(Numeric(4, 2), default=8)
+    max_hours_per_day = Column(Numeric(4, 2), default=12)
     
     # Status
     is_active = Column(Boolean, default=True)
@@ -156,7 +157,7 @@ class Shift(Base):
     
     # Relationships
     company = relationship("Company", back_populates="shifts")
-    employees = relationship("Employee")
+    employees = relationship("Employee", back_populates="shift")
     
     # Indexes
     __table_args__ = (

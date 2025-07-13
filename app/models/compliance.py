@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Enum, Index, Date, Decimal, Text
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Enum, Index, Date, Text
+from sqlalchemy.types import Numeric
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.core.database import Base
@@ -120,7 +121,7 @@ class ComplianceAssessment(Base):
     
     # Results
     overall_status = Column(Enum(ComplianceStatus), nullable=False)
-    compliance_score = Column(Decimal(5, 2))  # percentage 0-100
+    compliance_score = Column(Numeric(5, 2))  # percentage 0-100
     findings = Column(Text)  # JSON array of findings
     non_compliance_issues = Column(Text)  # JSON array of issues
     
@@ -209,8 +210,8 @@ class ComplianceActionItem(Base):
     supporting_documents = Column(Text)  # JSON array of document references
     
     # Cost tracking
-    estimated_cost = Column(Decimal(10, 2))
-    actual_cost = Column(Decimal(10, 2))
+    estimated_cost = Column(Numeric(10, 2))
+    actual_cost = Column(Numeric(10, 2))
     budget_approved = Column(Boolean, default=False)
     
     # System fields
@@ -248,7 +249,7 @@ class ComplianceTraining(Base):
     # Training configuration
     is_mandatory = Column(Boolean, default=True)
     frequency_months = Column(Integer)  # How often retraining is required
-    duration_hours = Column(Decimal(4, 2))
+    duration_hours = Column(Numeric(4, 2))
     
     # Delivery method
     delivery_method = Column(String(50))  # online, classroom, hybrid, self_study
@@ -318,7 +319,7 @@ class ComplianceTrainingEnrollment(Base):
     certificate_expiry_date = Column(Date)
     
     # Tracking
-    time_spent_hours = Column(Decimal(6, 2))
+    time_spent_hours = Column(Numeric(6, 2))
     modules_completed = Column(Text)  # JSON array of completed modules
     
     # System fields

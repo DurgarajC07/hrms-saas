@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Enum, Index, Date, Decimal, Text
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Enum, Index, Date, Text
+from sqlalchemy.types import Numeric
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.core.database import Base
@@ -69,11 +70,11 @@ class EmployeeBenefitPlan(Base):
     plan_year = Column(Integer, nullable=False)
     
     # Cost structure
-    employer_contribution = Column(Decimal(10, 2), default=0)
-    employee_contribution = Column(Decimal(10, 2), default=0)
-    employer_contribution_percent = Column(Decimal(5, 2))
-    employee_contribution_percent = Column(Decimal(5, 2))
-    annual_premium = Column(Decimal(10, 2))
+    employer_contribution = Column(Numeric(10, 2), default=0)
+    employee_contribution = Column(Numeric(10, 2), default=0)
+    employer_contribution_percent = Column(Numeric(5, 2))
+    employee_contribution_percent = Column(Numeric(5, 2))
+    annual_premium = Column(Numeric(10, 2))
     
     # Eligibility
     eligibility_requirements = Column(Text)
@@ -82,10 +83,10 @@ class EmployeeBenefitPlan(Base):
     eligible_employee_types = Column(Text)  # JSON array
     
     # Plan limits
-    annual_maximum = Column(Decimal(10, 2))
-    lifetime_maximum = Column(Decimal(10, 2))
-    deductible_amount = Column(Decimal(10, 2))
-    out_of_pocket_maximum = Column(Decimal(10, 2))
+    annual_maximum = Column(Numeric(10, 2))
+    lifetime_maximum = Column(Numeric(10, 2))
+    deductible_amount = Column(Numeric(10, 2))
+    out_of_pocket_maximum = Column(Numeric(10, 2))
     
     # Status and configuration
     status = Column(Enum(BenefitStatus), default=BenefitStatus.ACTIVE)
@@ -127,14 +128,14 @@ class BenefitEnrollment(Base):
     
     # Coverage selection
     coverage_level = Column(String(50))  # employee_only, employee_spouse, family, etc.
-    elected_amount = Column(Decimal(10, 2))
+    elected_amount = Column(Numeric(10, 2))
     beneficiary_information = Column(Text)  # JSON for multiple beneficiaries
     
     # Cost breakdown
-    employee_premium = Column(Decimal(10, 2), default=0)
-    employer_premium = Column(Decimal(10, 2), default=0)
-    total_premium = Column(Decimal(10, 2), default=0)
-    payroll_deduction_amount = Column(Decimal(10, 2), default=0)
+    employee_premium = Column(Numeric(10, 2), default=0)
+    employer_premium = Column(Numeric(10, 2), default=0)
+    total_premium = Column(Numeric(10, 2), default=0)
+    payroll_deduction_amount = Column(Numeric(10, 2), default=0)
     payroll_deduction_frequency = Column(String(20), default="monthly")
     
     # Dependent information
@@ -183,7 +184,7 @@ class BenefitDependent(Base):
     first_name = Column(String(100), nullable=False)
     last_name = Column(String(100), nullable=False)
     date_of_birth = Column(Date, nullable=False)
-    relationship = Column(String(50), nullable=False)  # spouse, child, domestic_partner
+    relationship_type = Column(String(50), nullable=False)  # spouse, child, domestic_partner
     gender = Column(String(10))
     ssn_last_four = Column(String(4))
     
@@ -202,7 +203,7 @@ class BenefitDependent(Base):
     # Indexes
     __table_args__ = (
         Index('idx_dependent_enrollment', 'enrollment_id', 'is_active'),
-        Index('idx_dependent_relationship', 'relationship', 'is_active'),
+        Index('idx_dependent_relationship', 'relationship_type', 'is_active'),
     )
 
 

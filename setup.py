@@ -7,6 +7,7 @@ This script sets up the HRMS application with sample data
 import asyncio
 import sys
 import os
+from datetime import date
 from pathlib import Path
 
 # Add the project root to Python path
@@ -202,7 +203,7 @@ async def create_sample_users():
                     work_email=user_data["email"],
                     employee_type=user_data["employee_type"],
                     status=EmployeeStatus.ACTIVE,
-                    hire_date="2024-01-01",
+                    hire_date=date(2024, 1, 1),
                     job_title=user_data["job_title"],
                     base_salary=75000.00
                 )

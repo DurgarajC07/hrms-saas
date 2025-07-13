@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, Decimal, ForeignKey, Enum, Index
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, ForeignKey, Enum, Index
+from sqlalchemy.types import Numeric
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.core.database import Base
@@ -57,8 +58,8 @@ class Company(Base):
     postal_code = Column(String(20))
     
     # Geolocation for attendance
-    latitude = Column(Decimal(10, 8))
-    longitude = Column(Decimal(11, 8))
+    latitude = Column(Numeric(10, 8))
+    longitude = Column(Numeric(11, 8))
     punch_radius = Column(Integer, default=100)  # meters
     
     # Subscription
@@ -135,7 +136,7 @@ class Department(Base):
     code = Column(String(20), nullable=False)  # e.g., ENG, HR, FIN
     description = Column(Text)
     manager_id = Column(Integer, ForeignKey("employees.id"))
-    budget = Column(Decimal(15, 2))
+    budget = Column(Numeric(15, 2))
     cost_center = Column(String(50))
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -143,7 +144,7 @@ class Department(Base):
     
     # Relationships
     company = relationship("Company", back_populates="departments")
-    employees = relationship("Employee", back_populates="department")
+    employees = relationship("Employee", foreign_keys="Employee.department_id", back_populates="department")
     manager = relationship("Employee", foreign_keys=[manager_id])
     
     # Indexes

@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Enum, Index, Date, Decimal, Text
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Enum, Index, Date, Text
+from sqlalchemy.types import Numeric
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.core.database import Base
@@ -38,7 +39,7 @@ class Expense(Base):
     category = Column(Enum(ExpenseCategory), nullable=False)
     title = Column(String(200), nullable=False)
     description = Column(Text)
-    amount = Column(Decimal(15, 2), nullable=False)
+    amount = Column(Numeric(15, 2), nullable=False)
     currency = Column(String(3), default="USD")
     expense_date = Column(Date, nullable=False)
     
@@ -56,7 +57,7 @@ class Expense(Base):
     
     # Reimbursement
     reimbursed_at = Column(DateTime(timezone=True))
-    reimbursed_amount = Column(Decimal(15, 2))
+    reimbursed_amount = Column(Numeric(15, 2))
     reimbursement_reference = Column(String(100))
     
     # Project/client tracking
@@ -89,14 +90,14 @@ class ExpensePolicy(Base):
     category = Column(Enum(ExpenseCategory), nullable=False)
     
     # Policy limits
-    max_amount_per_expense = Column(Decimal(15, 2))
-    max_amount_per_month = Column(Decimal(15, 2))
+    max_amount_per_expense = Column(Numeric(15, 2))
+    max_amount_per_month = Column(Numeric(15, 2))
     requires_receipt = Column(Boolean, default=True)
-    receipt_required_above = Column(Decimal(10, 2), default=25.00)
+    receipt_required_above = Column(Numeric(10, 2), default=25.00)
     
     # Approval rules
     requires_approval = Column(Boolean, default=True)
-    auto_approve_below = Column(Decimal(10, 2))
+    auto_approve_below = Column(Numeric(10, 2))
     approval_levels = Column(Text)  # JSON array of approval levels
     
     # Applicable employees
@@ -138,7 +139,7 @@ class Project(Base):
     client_name = Column(String(200))
     start_date = Column(Date)
     end_date = Column(Date)
-    budget = Column(Decimal(15, 2))
+    budget = Column(Numeric(15, 2))
     currency = Column(String(3), default="USD")
     
     # Project manager

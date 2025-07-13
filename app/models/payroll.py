@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Enum, Index, Date, Decimal, Text
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Enum, Index, Date, Text
+from sqlalchemy.types import Numeric
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.core.database import Base
@@ -58,9 +59,9 @@ class Payroll(Base):
     
     # Summary
     total_employees = Column(Integer, default=0)
-    total_gross_pay = Column(Decimal(15, 2), default=0)
-    total_deductions = Column(Decimal(15, 2), default=0)
-    total_net_pay = Column(Decimal(15, 2), default=0)
+    total_gross_pay = Column(Numeric(15, 2), default=0)
+    total_deductions = Column(Numeric(15, 2), default=0)
+    total_net_pay = Column(Numeric(15, 2), default=0)
     
     # Processing details
     processed_at = Column(DateTime(timezone=True))
@@ -102,21 +103,21 @@ class PayrollEmployee(Base):
     designation = Column(String(200))
     
     # Salary structure
-    base_salary = Column(Decimal(15, 2), nullable=False)
+    base_salary = Column(Numeric(15, 2), nullable=False)
     
     # Attendance data
-    days_worked = Column(Decimal(5, 2), default=0)
-    days_absent = Column(Decimal(5, 2), default=0)
-    overtime_hours = Column(Decimal(5, 2), default=0)
+    days_worked = Column(Numeric(5, 2), default=0)
+    days_absent = Column(Numeric(5, 2), default=0)
+    overtime_hours = Column(Numeric(5, 2), default=0)
     
     # Calculated amounts
-    gross_pay = Column(Decimal(15, 2), default=0)
-    total_deductions = Column(Decimal(15, 2), default=0)
-    net_pay = Column(Decimal(15, 2), default=0)
+    gross_pay = Column(Numeric(15, 2), default=0)
+    total_deductions = Column(Numeric(15, 2), default=0)
+    net_pay = Column(Numeric(15, 2), default=0)
     
     # Tax calculations
-    taxable_income = Column(Decimal(15, 2), default=0)
-    tax_deducted = Column(Decimal(15, 2), default=0)
+    taxable_income = Column(Numeric(15, 2), default=0)
+    tax_deducted = Column(Numeric(15, 2), default=0)
     
     # Status
     is_processed = Column(Boolean, default=False)
@@ -149,9 +150,9 @@ class PayrollComponent(Base):
     component_name = Column(String(100), nullable=False)
     
     # Amount calculation
-    amount = Column(Decimal(15, 2), nullable=False)
+    amount = Column(Numeric(15, 2), nullable=False)
     is_percentage = Column(Boolean, default=False)
-    percentage_value = Column(Decimal(5, 2))
+    percentage_value = Column(Numeric(5, 2))
     calculation_base = Column(String(50))  # basic_salary, gross_pay, etc.
     
     # Tax treatment
@@ -181,28 +182,28 @@ class SalaryStructure(Base):
     effective_to = Column(Date)
     
     # Basic components
-    basic_salary = Column(Decimal(15, 2), nullable=False)
-    hra = Column(Decimal(15, 2), default=0)
-    transport_allowance = Column(Decimal(15, 2), default=0)
-    medical_allowance = Column(Decimal(15, 2), default=0)
-    special_allowance = Column(Decimal(15, 2), default=0)
+    basic_salary = Column(Numeric(15, 2), nullable=False)
+    hra = Column(Numeric(15, 2), default=0)
+    transport_allowance = Column(Numeric(15, 2), default=0)
+    medical_allowance = Column(Numeric(15, 2), default=0)
+    special_allowance = Column(Numeric(15, 2), default=0)
     
     # Variable components
-    performance_bonus = Column(Decimal(15, 2), default=0)
-    annual_bonus = Column(Decimal(15, 2), default=0)
+    performance_bonus = Column(Numeric(15, 2), default=0)
+    annual_bonus = Column(Numeric(15, 2), default=0)
     
     # Deduction components
-    pf_employee = Column(Decimal(15, 2), default=0)
-    pf_employer = Column(Decimal(15, 2), default=0)
-    esi_employee = Column(Decimal(15, 2), default=0)
-    esi_employer = Column(Decimal(15, 2), default=0)
-    professional_tax = Column(Decimal(15, 2), default=0)
+    pf_employee = Column(Numeric(15, 2), default=0)
+    pf_employer = Column(Numeric(15, 2), default=0)
+    esi_employee = Column(Numeric(15, 2), default=0)
+    esi_employer = Column(Numeric(15, 2), default=0)
+    professional_tax = Column(Numeric(15, 2), default=0)
     
     # Calculated fields
-    gross_salary = Column(Decimal(15, 2))
-    total_deductions = Column(Decimal(15, 2))
-    net_salary = Column(Decimal(15, 2))
-    ctc = Column(Decimal(15, 2))  # Cost to Company
+    gross_salary = Column(Numeric(15, 2))
+    total_deductions = Column(Numeric(15, 2))
+    net_salary = Column(Numeric(15, 2))
+    ctc = Column(Numeric(15, 2))  # Cost to Company
     
     # Status
     is_active = Column(Boolean, default=True)

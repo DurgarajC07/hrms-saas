@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Enum, Index, Date, Decimal, Text
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Enum, Index, Date, Text
+from sqlalchemy.types import Numeric
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.core.database import Base
@@ -35,8 +36,8 @@ class Leave(Base):
     leave_type = Column(Enum(LeaveType), nullable=False)
     start_date = Column(Date, nullable=False)
     end_date = Column(Date, nullable=False)
-    days_requested = Column(Decimal(4, 2), nullable=False)
-    days_approved = Column(Decimal(4, 2))
+    days_requested = Column(Numeric(4, 2), nullable=False)
+    days_approved = Column(Numeric(4, 2))
     
     # Request details
     reason = Column(Text, nullable=False)
@@ -60,7 +61,7 @@ class Leave(Base):
     
     # Relationships
     company = relationship("Company", back_populates="leaves")
-    employee = relationship("Employee", back_populates="leaves")
+    employee = relationship("Employee", foreign_keys=[employee_id], back_populates="leaves")
     approver = relationship("User")
     coverage_employee = relationship("Employee", foreign_keys=[coverage_by])
     
@@ -81,14 +82,14 @@ class LeaveBalance(Base):
     year = Column(Integer, nullable=False)
     
     # Balance tracking
-    allocated_days = Column(Decimal(5, 2), default=0)
-    used_days = Column(Decimal(5, 2), default=0)
-    pending_days = Column(Decimal(5, 2), default=0)
-    available_days = Column(Decimal(5, 2), default=0)
+    allocated_days = Column(Numeric(5, 2), default=0)
+    used_days = Column(Numeric(5, 2), default=0)
+    pending_days = Column(Numeric(5, 2), default=0)
+    available_days = Column(Numeric(5, 2), default=0)
     
     # Carry forward
-    carried_forward = Column(Decimal(5, 2), default=0)
-    max_carry_forward = Column(Decimal(5, 2), default=0)
+    carried_forward = Column(Numeric(5, 2), default=0)
+    max_carry_forward = Column(Numeric(5, 2), default=0)
     
     # System fields
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -112,7 +113,7 @@ class LeavePolicy(Base):
     leave_type = Column(Enum(LeaveType), nullable=False)
     
     # Policy rules
-    days_per_year = Column(Decimal(5, 2), nullable=False)
+    days_per_year = Column(Numeric(5, 2), nullable=False)
     min_service_period = Column(Integer, default=0)  # months
     max_consecutive_days = Column(Integer)
     min_advance_notice = Column(Integer, default=1)  # days
@@ -123,12 +124,12 @@ class LeavePolicy(Base):
     
     # Carry forward rules
     allow_carry_forward = Column(Boolean, default=False)
-    max_carry_forward_days = Column(Decimal(5, 2), default=0)
+    max_carry_forward_days = Column(Numeric(5, 2), default=0)
     carry_forward_expiry_months = Column(Integer, default=12)
     
     # Approval settings
     requires_approval = Column(Boolean, default=True)
-    auto_approve_threshold = Column(Decimal(4, 2))  # days
+    auto_approve_threshold = Column(Numeric(4, 2))  # days
     
     # Applicable to
     applicable_to_all = Column(Boolean, default=True)

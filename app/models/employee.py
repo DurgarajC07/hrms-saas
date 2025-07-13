@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, Decimal, ForeignKey, Enum, Index, Date
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, ForeignKey, Enum, Index, Date
+from sqlalchemy.types import Numeric
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.core.database import Base
@@ -95,7 +96,7 @@ class Employee(Base):
     shift_id = Column(Integer, ForeignKey("shifts.id"))
     
     # Compensation
-    base_salary = Column(Decimal(15, 2))
+    base_salary = Column(Numeric(15, 2))
     currency = Column(String(3), default="USD")
     pay_frequency = Column(String(20), default="monthly")  # weekly, bi-weekly, monthly
     overtime_eligible = Column(Boolean, default=True)
@@ -127,19 +128,20 @@ class Employee(Base):
     
     # Relationships
     company = relationship("Company", back_populates="employees")
-    user = relationship("User")
-    department = relationship("Department", back_populates="employees")
+    user = relationship("User", foreign_keys=[user_id])
+    department = relationship("Department", foreign_keys=[department_id], back_populates="employees")
     manager = relationship("Employee", remote_side=[id])
-    shift = relationship("Shift")
+    shift = relationship("Shift", back_populates="employees")
+    creator = relationship("User", foreign_keys=[created_by])
     attendances = relationship("Attendance", back_populates="employee")
-    leaves = relationship("Leave", back_populates="employee")
+    leaves = relationship("Leave", foreign_keys="Leave.employee_id", back_populates="employee")
     payrolls = relationship("PayrollEmployee", back_populates="employee")
-    performances = relationship("Performance", back_populates="employee")
+    performances = relationship("Performance", foreign_keys="Performance.employee_id", back_populates="employee")
     assets = relationship("AssetAssignment", back_populates="employee")
     expenses = relationship("Expense", back_populates="employee")
     benefit_enrollments = relationship("BenefitEnrollment", back_populates="employee")
     documents = relationship("Document", back_populates="employee")
-    onboarding_checklists = relationship("OnboardingChecklist", back_populates="employee")
+    onboarding_checklists = relationship("OnboardingChecklist", foreign_keys="OnboardingChecklist.employee_id", back_populates="employee")
     
     # Indexes for performance
     __table_args__ = (

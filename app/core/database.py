@@ -47,6 +47,6 @@ async def init_db():
         from app.models import (
             user, company, employee, attendance, payroll, 
             leave, expense, performance, asset, document,
-            benefit, compliance, shift, tax, onboarding
+            benefits, compliance, onboarding
         )
         await conn.run_sync(Base.metadata.create_all)

@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Enum, Index, Date, Decimal, Text
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Enum, Index, Date, Text
+from sqlalchemy.types import Numeric
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.core.database import Base
@@ -56,9 +57,9 @@ class Asset(Base):
     
     # Financial information
     purchase_date = Column(Date)
-    purchase_cost = Column(Decimal(15, 2))
-    current_value = Column(Decimal(15, 2))
-    depreciation_rate = Column(Decimal(5, 2))  # Percentage per year
+    purchase_cost = Column(Numeric(15, 2))
+    current_value = Column(Numeric(15, 2))
+    depreciation_rate = Column(Numeric(5, 2))  # Percentage per year
     warranty_expiry = Column(Date)
     
     # Location and status
@@ -141,7 +142,7 @@ class AssetMaintenance(Base):
     # Maintenance details
     maintenance_type = Column(String(100), nullable=False)  # repair, upgrade, inspection
     description = Column(Text, nullable=False)
-    cost = Column(Decimal(10, 2))
+    cost = Column(Numeric(10, 2))
     maintenance_date = Column(Date, nullable=False)
     
     # Service provider
