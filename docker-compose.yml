@@ -1,0 +1,109 @@
+version: "3.8"
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: hrms_user
+      POSTGRES_PASSWORD: hrms_password
+      POSTGRES_DB: hrms_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - hrms_network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - hrms_network
+
+  # HRMS API Application
+  hrms_api:
+    build: .
+    environment:
+      - ENV=production
+      - DEBUG=False
+      - DATABASE_URL=postgresql+asyncpg://hrms_user:hrms_password@postgres:5432/hrms_db
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=your-production-secret-key-change-this
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    networks:
+      - hrms_network
+    volumes:
+      - ./logs:/app/logs
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - hrms_api
+    restart: unless-stopped
+    networks:
+      - hrms_network
+
+  # Celery Worker for Background Tasks
+  celery_worker:
+    build: .
+    command: celery -A app.celery_app worker --loglevel=info --concurrency=4
+    environment:
+      - ENV=production
+      - DEBUG=False
+      - DATABASE_URL=postgresql+asyncpg://hrms_user:hrms_password@postgres:5432/hrms_db
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/2
+      - CELERY_RESULT_BACKEND=redis://redis:6379/3
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+    networks:
+      - hrms_network
+
+  # Celery Beat for Scheduled Tasks
+  celery_beat:
+    build: .
+    command: celery -A app.celery_app beat --loglevel=info
+    environment:
+      - ENV=production
+      - DEBUG=False
+      - DATABASE_URL=postgresql+asyncpg://hrms_user:hrms_password@postgres:5432/hrms_db
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/2
+      - CELERY_RESULT_BACKEND=redis://redis:6379/3
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+    networks:
+      - hrms_network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  hrms_network:
+    driver: bridge
